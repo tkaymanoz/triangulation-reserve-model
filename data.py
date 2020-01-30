@@ -43,6 +43,7 @@ def is_valid_date(date_value):
 #3. The total paid amounts should be >=0
 #4. Total incurred claim should be the same
 #5. Claim amount for single claim should be less than the sum insured
+#6 usaite zvekutamba
 
 def iri_function_ndera_tinaye_iri():
     pass
