@@ -26,6 +26,7 @@ def validate(loaded_data):
 
 #date checks
 def is_date_greater_or_equal(first_date,second_date):
+    #use datetime module
     pass
 
 def is_valid_date(date_value):
