@@ -20,7 +20,7 @@ def get_features(source):
     pass
 
 def validate(loaded_data):
-    pass
+    return loaded_data * loaded_data
 
 
 
@@ -37,6 +37,8 @@ def is_valid_date(date_value):
 #   hapana zvatiri kuita
 #   alternative is to allow user to define which column is doing what after upload. But this feels convoluted and painful to code
 #2. we expect certain columns to have specific data types
+#use try except
+
 
 #checks on integrity of a claims
 #1. claim key has a single date of loss
@@ -48,3 +50,4 @@ def is_valid_date(date_value):
 
 def iri_function_ndera_tinaye_iri():
     pass
+
