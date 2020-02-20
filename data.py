@@ -2,25 +2,40 @@ import pandas as pd
 import numpy as np
 import datetime as dt
 
+path_to_file = "../triangulation-reserve-model/Data/"
 
-def load_claims():
-    pass
+def load_claims(path_to_file):
+    claim_data = pd.read_csv(f"{path_to_file}sevha mdara.csv")
+    return claims_data
+
+
 
 def load_exposure():
     pass
 
-def check_data():
-    pass
+def check_data(data,date_columns):
+    for i in date_columns:
+        data[i] = pd.to_datetime(data[i])
+    
+    data["Date Check"] = "Error"
+    data.loc[data["Date Incurred"] > data["Date of Loss"], "Date Check"] = "OK"
+    data.loc[data["Date Incurred"] == data["Date of Loss"], "Date Check"] = "Warning"
+    
+    return data
 
-def filter_features(features_list):
-    pass
+def filter_features(data,features_list):
+    data = data.filter(items = features_list)
+
+
+    return data
 
 
 def get_features(source):
     pass
 
 def validate(loaded_data):
-    return loaded_data * loaded_data
+    date = dt.datetime(loaded_data)
+    return date
 
 
 
