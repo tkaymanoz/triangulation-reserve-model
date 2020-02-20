@@ -1,43 +1,53 @@
 import pandas as pd
 import numpy as np
 import datetime as dt
+import sys
 
 path_to_file = "../triangulation-reserve-model/Data/"
 
-def load_claims(path_to_file):
-    claim_data = pd.read_csv(f"{path_to_file}sevha mdara.csv")
-    return claims_data
+def load_data(path_to_file):
+    data = pd.read_csv(path_to_file)
+    return data
 
+def filter_features(data,features_list):
+    '''filter features that are used to generate traingles'''
+    data = data.filter(items = features_list)
+    return data
 
-
-def load_exposure():
-    pass
-
-def check_data(data,date_columns):
+def validate_dates(data,date_columns,min_date):
+    '''checks if dates are reasonable. returns error message if Date Inccurred < Date of Loss'''
+    data = data.loc[data["Date of Loss"] >= pd.to_datetime(min_date)]
+    
     for i in date_columns:
         data[i] = pd.to_datetime(data[i])
     
     data["Date Check"] = "Error"
     data.loc[data["Date Incurred"] > data["Date of Loss"], "Date Check"] = "OK"
     data.loc[data["Date Incurred"] == data["Date of Loss"], "Date Check"] = "Warning"
+    if len(data.loc[data["Date Check"] == "Error"]) > 0:
+        sys.exit("There are some observations with Date Incurred greater than Date of Loss")
+        
+    return data
+
+def validate_incremental_claims(loaded_data):
+    '''checks if the aggredate claims per claim key are negative'''
+    loaded_data["Incremental Claim Amount"] = pd.to_numeric(loaded_data["Incremental Claim Amount"],errors = "coerce")
+    claims_check = loaded_data.groupby(["Claim Key"])["Incremental Claim Amount"].agg("sum")
+    claims_check = pd.DataFrame(claims_check)
+    claims_check["Claims Check"] = "error"
+    claims_check.loc[claims_check["Incremental Claim Amount"] >= 0 , "Claims Check"] = "ok"
+
+    if len(claims_check.loc[claims_check["Claims Check"] == "error"]) > 0:
+        sys.exit("some claim keys have have an aggregate less then 0")
     
-    return data
-
-def filter_features(data,features_list):
-    data = data.filter(items = features_list)
+    return claims_check
 
 
-    return data
-
+def load_exposure():
+    pass
 
 def get_features(source):
     pass
-
-def validate(loaded_data):
-    date = dt.datetime(loaded_data)
-    return date
-
-
 
 #date checks
 def is_date_greater_or_equal(first_date,second_date):
