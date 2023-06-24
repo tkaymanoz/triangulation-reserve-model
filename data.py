@@ -6,13 +6,22 @@ import sys
 path_to_file = "../triangulation-reserve-model/Data/"
 
 def load_data(path_to_file):
-    data = pd.read_csv(path_to_file)
+    try:
+        data = pd.read_csv(path_to_file)
+    except FileNotFoundError:
+        sys.exit("the path to the file you provided may be wrong. check and try again")
     return data
 
-def filter_features(data,features_list):
+def filter_features(data,features_list = ['Claim Key', 'Date Incurred', 'Date of Loss', 'Incremental Claim Amount']):
     '''filter features that are used to generate traingles'''
     data = data.filter(items = features_list)
-    return data
+   
+    n_sample,n_features = data.shape
+    
+    if n_features < 4:
+        raise Exception("The data you are trying to read may not have the required columns. Check and Try again")
+
+
 
 def validate_dates(data,date_columns,min_date):
     '''checks if dates are reasonable. returns error message if Date Inccurred < Date of Loss'''
@@ -20,7 +29,7 @@ def validate_dates(data,date_columns,min_date):
     
     for i in date_columns:
         data[i] = pd.to_datetime(data[i])
-    
+
     data["Date Check"] = "Error"
     data.loc[data["Date Incurred"] > data["Date of Loss"], "Date Check"] = "OK"
     data.loc[data["Date Incurred"] == data["Date of Loss"], "Date Check"] = "Warning"
